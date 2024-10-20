@@ -1,66 +1,72 @@
-import { CarTaxiFront } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
-export default function Home(){
+export default function Home() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
 
-    useEffect(()=> {
+    useEffect(() => {
         const canvas = canvasRef.current;
-
-        if (canvas){
-            if (ctx){
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                // Set canvas dimensions
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight - canvas.offsetTop;
+                
+                // Set canvas background to black
+                ctx.fillStyle = 'black';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Configure drawing settings
                 ctx.lineCap = 'round';
-                ctx.linewidth = 3;
+                ctx.lineWidth = 3;
             }
         }
-    }, [] )
+    }, []);
 
     const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
         const canvas = canvasRef.current;
         if (canvas) {
-            canvas.style.background = 'black';
             const ctx = canvas.getContext('2d');
-            if (ctx){
+            if (ctx) {
                 ctx.beginPath();
                 ctx.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
                 setIsDrawing(true);
             }
         }
-    }
+    };
 
     const stopDrawing = () => {
         setIsDrawing(false);
-    }
+    };
 
     const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
-        if (!isDrawing){
+        if (!isDrawing) {
             return;
         }
-        const canvas = canvasRef.current;
-        if (canvas){
-            const ctx = canvas.getContext('2d');
-            if (ctx){
-            ctx.strokeStyle = 'white';
-            ctx.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
-            ctx.stroke();
-        }
-    }
-};
 
-    return(
+        const canvas = canvasRef.current;
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.strokeStyle = 'white'; // Drawing in white
+                ctx.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+                ctx.stroke();
+            }
+        }
+    };
+
+    return (
         <>
             <canvas
-                ref = {canvasRef}
-                id = 'canvas'
+                ref={canvasRef}
+                id="canvas"
                 className="absolute top-0 left-0 w-full h-full"
                 onMouseDown={startDrawing}
-                onMouseOut={stopDrawing} 
-                onMouseUp={stopDrawing} 
+                onMouseMove={draw}
+                onMouseOut={stopDrawing}
+                onMouseUp={stopDrawing}
             />
         </>
-    )
-    }
+    );
 }
