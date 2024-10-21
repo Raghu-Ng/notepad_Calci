@@ -1,8 +1,36 @@
 import React, { useEffect, useRef, useState } from "react";
+import {SWATCHES} from '@/constants.ts';
+import { ColorSwatch, Group } from "@mantine/core";
+import {Button} from '@/components/ui/Button';
+import axios from 'axios';
+
+
+interface Response {
+    expr: string ;
+    result : string;
+    assign : boolean;
+}
+
+interface GeneratedResult {
+    expression : string ;
+    answer: string;
+}
 
 export default function Home() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
+    const [ color, setColor] = useState('rgb(255, 255, 255');
+    const [ reset, setReset ] = useState(false);
+    const [result, setResult] = useState<GeneratedResult>();
+    const [dictOfVars, setDictOfVars] = useState({}); 
+
+    useEffect(() => {
+        if (reset){
+            resetCanvas();
+            setReset(false);
+        }
+    },[reset]);
+
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -23,6 +51,16 @@ export default function Home() {
             }
         }
     }, []);
+
+    const resetCanvas = () => {
+        const canvas = canvasRef.current;
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            if (ctx){
+                ctx.clearRect(0,0, canvas.width, canvas.height);
+            }
+        }
+    };
 
     const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
         const canvas = canvasRef.current;
@@ -49,7 +87,7 @@ export default function Home() {
         if (canvas) {
             const ctx = canvas.getContext('2d');
             if (ctx) {
-                ctx.strokeStyle = 'white'; // Drawing in white
+                ctx.strokeStyle = color; // Drawing in white
                 ctx.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
                 ctx.stroke();
             }
