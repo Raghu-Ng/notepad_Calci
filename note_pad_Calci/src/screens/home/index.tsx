@@ -1,28 +1,27 @@
 import React, { useEffect, useRef, useState } from "react";
-import {SWATCHES} from '@/constants.ts';
+import {SWATCHES} from '/workspaces/Calci/note_pad_Calci/constants.ts';
 import { ColorSwatch, Group } from "@mantine/core";
-import {Button} from '@/components/ui/Button';
+import {Button} from '/src/components/ui/button.tsx';
 import axios from 'axios';
 
 
-interface Response {
-    expr: string ;
-    result : string;
-    assign : boolean;
-}
+// interface Response {
+//     expr: string ;
+//     result : string;
+//     assign : boolean;
+// }
 
-interface GeneratedResult {
-    expression : string ;
-    answer: string;
-}
+// interface GeneratedResult {
+//     expression : string ;
+//     answer: string;}
 
 export default function Home() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const [ color, setColor] = useState('rgb(255, 255, 255');
     const [ reset, setReset ] = useState(false);
-    const [result, setResult] = useState<GeneratedResult>();
-    const [dictOfVars, setDictOfVars] = useState({}); 
+    // const [result, setResult] = useState<GeneratedResult>();
+    // const [dictOfVars, setDictOfVars] = useState({}); 
 
     useEffect(() => {
         if (reset){
@@ -52,15 +51,48 @@ export default function Home() {
         }
     }, []);
 
+    const sendData = async () => {
+        const canvas = canvasRef.current;
+
+        if (canvas){
+            const response = await axios({
+                method: 'post',
+                url: `${import.meta.env.VITE_API_URL}/calculate`,
+                data : {
+                    image: canvas.toDataURL('image/png'),
+                    dict_of_vars: dictOfVars,
+                }
+            });
+
+            const resp = await response.data;
+            console.log('Response:', resp);
+        }
+    }
+
+    // const resetCanvas = () => {
+    //     const canvas = canvasRef.current;
+    //     if (canvas) {
+    //         const ctx = canvas.getContext('2d');
+    //         if (ctx){
+    //             ctx.clearRect(0,0, canvas.width, canvas.height);
+    //         }
+    //     }
+    // };
+
     const resetCanvas = () => {
         const canvas = canvasRef.current;
         if (canvas) {
             const ctx = canvas.getContext('2d');
-            if (ctx){
-                ctx.clearRect(0,0, canvas.width, canvas.height);
+            if (ctx) {
+                // Clear the canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // Set the canvas background to black
+                ctx.fillStyle = 'black';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
         }
     };
+    
 
     const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
         const canvas = canvasRef.current;
@@ -96,6 +128,36 @@ export default function Home() {
 
     return (
         <>
+            <div className="grid grid-cols-3 gap-2">
+                <Button
+                    onClick={() => setReset(true)}
+                    className="z-20 bg-black text-white"
+                    variant = 'default'
+                    color="black"
+                >
+                    Reset
+                </Button>
+
+                <Group className="z-20">
+                    {SWATCHES.map((swatchColor: string) => (
+                        <ColorSwatch
+                            key={swatchColor}
+                            color= {swatchColor}
+                            onClick={() => setColor(swatchColor)}
+                        />
+                        ))}
+                </Group>
+
+                <Button
+                    onClick={sendData}
+                    className="z-20 bg-black text-white"
+                    variant = 'default'
+                    color="black"
+                >
+                    Calculate
+                </Button>
+            </div>
+
             <canvas
                 ref={canvasRef}
                 id="canvas"
