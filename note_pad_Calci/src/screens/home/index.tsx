@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import {SWATCHES} from '/workspaces/Calci/note_pad_Calci/constants.ts';
+import {SWATCHES} from 'C:/Users/ravi2/Calci/note_pad_Calci/constants.ts';
 import { ColorSwatch, Group } from "@mantine/core";
-import {Button} from '/src/components/ui/button.tsx';
+import {Button} from 'C:/Users/ravi2/Calci/note_pad_Calci/src/components/ui/button.tsx';
 import axios from 'axios';
 
 
@@ -36,15 +36,12 @@ export default function Home() {
         if (canvas) {
             const ctx = canvas.getContext('2d');
             if (ctx) {
-                // Set canvas dimensions
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight - canvas.offsetTop;
                 
-                // Set canvas background to black
                 ctx.fillStyle = 'black';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Configure drawing settings
                 ctx.lineCap = 'round';
                 ctx.lineWidth = 3;
             }
@@ -119,7 +116,7 @@ export default function Home() {
         if (canvas) {
             const ctx = canvas.getContext('2d');
             if (ctx) {
-                ctx.strokeStyle = color; // Drawing in white
+                ctx.strokeStyle = color; 
                 ctx.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
                 ctx.stroke();
             }
